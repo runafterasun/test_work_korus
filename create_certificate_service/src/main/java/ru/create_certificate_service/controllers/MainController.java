@@ -2,13 +2,10 @@ package ru.create_certificate_service.controllers;
 
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,11 +25,6 @@ public class MainController {
 	public MainController(UserSertificatRepository userRepository) {
 		this.userRepository = userRepository;
 	}
-	
-	@ExceptionHandler({NullPointerException.class})
-	  public String handleNullPointerException(HttpServletRequest req, Exception ex) {
-	    return "Пользователя с запращиваемым id не существует";
-	  }
 
 	@PostMapping(value = "/getModelForGeneration", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> sent(@RequestBody UserSertificat userSertificat){
@@ -41,18 +33,25 @@ public class MainController {
 		return new ResponseEntity<>(userRepository.save(userSertificat).getId().toString(),HttpStatus.OK);	
 	}
 	
-	@GetMapping(value = "/getStatus/{id}")
+	@GetMapping(value = "/getStatus/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> sentStatus(@PathVariable("id") String id){
-		return new ResponseEntity<>(userRepository.findById(Long.parseLong(id)).orElse(null).getStatus(),HttpStatus.OK);	
-	}
-	
-	@GetMapping(value = "/getSertificate/{id}")
-	public ResponseEntity<String> sentSertificate(@PathVariable("id") String id){	
-		if(userRepository.findByIdAndStatus(Long.parseLong(id),ApplicationStatus.COMPLETE.getCode()).orNull() != null) {
-			return new ResponseEntity<>(userRepository.findByIdAndStatus(Long.parseLong(id),ApplicationStatus.COMPLETE.getCode()).orNull().getSertificate() ,HttpStatus.OK);
+		if(userRepository.findById(Long.parseLong(id)).isPresent()) {
+			return new ResponseEntity<>(userRepository.findById(Long.parseLong(id)).get().getStatus(),HttpStatus.OK);	
 		}else {
-			return new ResponseEntity<>("Сертификат с таким идентификатором еще не обработан и находится на стадии: "+userRepository.findById(Long.parseLong(id)).orElse(null).getStatus(),HttpStatus.OK);
+			return new ResponseEntity<>("Пользователя с запращиваемым id не существует",HttpStatus.BAD_REQUEST);
 		}
 	}
 	
+	@GetMapping(value = "/getSertificate/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> sentSertificate(@PathVariable("id") String id){	
+		if(userRepository.findById(Long.parseLong(id)).isPresent()) {
+			if(userRepository.findByIdAndStatus(Long.parseLong(id),ApplicationStatus.COMPLETE.getCode()).isPresent()) {
+				return new ResponseEntity<>(userRepository.findByIdAndStatus(Long.parseLong(id),ApplicationStatus.COMPLETE.getCode()).orNull().getSertificate() ,HttpStatus.OK);
+			}else {
+				return new ResponseEntity<>("Сертификат с таким идентификатором еще не обработан и находится на стадии: "+userRepository.findById(Long.parseLong(id)).get().getStatus(),HttpStatus.OK);	
+			}
+		}else {
+			return new ResponseEntity<>("Пользователя с запращиваемым id не существует",HttpStatus.BAD_REQUEST);
+		}	
+	}
 }

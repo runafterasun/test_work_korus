@@ -3,7 +3,6 @@ package ru.korus_certification_service.DTO;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
-
 public class CertificationDTO {
 	
 

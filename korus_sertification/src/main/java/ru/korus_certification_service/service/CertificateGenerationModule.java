@@ -6,7 +6,7 @@ import ru.korus_certification_service.DTO.CertificationDTO;
 
 public interface CertificateGenerationModule {
 	
-	Long sentModelForGeneration(CertificationDTO dto) throws IOException;
+	String sentModelForGeneration(CertificationDTO dto) throws IOException;
 	
 	String getGenerationStatus(Long id);
 	

@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import ru.create_certificate_service.repository.UserSertificatRepository;
+import ru.create_certificate_service.services.SentInformationAboutStatusToClient;
 import ru.create_certificate_service.services.SertificateCreator;
 
 @SpringBootApplication
@@ -16,7 +17,7 @@ public class Main {
     }
     
     @Bean 
-    public SertificateCreator sertificateCreator(@Autowired UserSertificatRepository userRepository) {
-    	return new SertificateCreator(userRepository);
+    public SertificateCreator sertificateCreator(@Autowired UserSertificatRepository userRepository,@Autowired SentInformationAboutStatusToClient sentToClient) {
+    	return new SertificateCreator(userRepository,sentToClient);
     }
 }

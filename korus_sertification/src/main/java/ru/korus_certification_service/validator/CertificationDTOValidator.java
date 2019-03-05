@@ -1,6 +1,9 @@
 package ru.korus_certification_service.validator;
 
 import java.util.Locale;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -34,6 +37,13 @@ public class CertificationDTOValidator implements Validator{
 					errors.rejectValue("", "",ms.getMessage("main.ivalid.fio.lenght",new Object[]{FOREIGN_LENGTH}, DEFAULT_MESSAGE, Locale.getDefault()));
 				}
 			}
+			Optional.ofNullable(dto.getPhone()).ifPresent(consumer -> 
+			{
+				Pattern pattern = Pattern.compile("^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$");
+			    Matcher matcher = pattern.matcher(consumer.toString());
+			    if(!matcher.find())
+			    	errors.rejectValue("", "",ms.getMessage("main.ivalid.phone",null, Locale.getDefault()));
+			});
 	}
 
 }

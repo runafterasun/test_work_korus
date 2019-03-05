@@ -48,12 +48,12 @@ public class MainController {
 		return new ResponseEntity<>("Заявка принята. Идентификатор заявки: " + certificateModule.sentModelForGeneration(certificationDTO),HttpStatus.OK);	
 	}
 	
-	@GetMapping(value = "/getStatus/{id}")
+	@GetMapping(value = "/getStatus/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> sentStatus(@PathVariable("id") String id){
 		return new ResponseEntity<>(certificateModule.getGenerationStatus(Long.parseLong(id)),HttpStatus.OK);	
 	}
 	
-	@GetMapping(value = "/getSertificate/{id}")
+	@GetMapping(value = "/getSertificate/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> sentSertificate(@PathVariable("id") String id){	
 		return new ResponseEntity<>(certificateModule.getCompleteCertificate(Long.parseLong(id)),HttpStatus.OK);	
 	}
